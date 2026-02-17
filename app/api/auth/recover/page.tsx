@@ -23,7 +23,6 @@ import { redirect } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ChevronLeft } from "lucide-react";
-import { prisma } from "@/constructor/PrismaConstructor";
 
 export default function RecoverPage() {
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -35,21 +34,8 @@ export default function RecoverPage() {
 
   const handleSignUp = async () => {
     setButtonLoading(true);
-
-    // verificar se o email está cadastrado
-
-    if (error) {
-      toast.error(getErrorMessage(error.code, "pt"));
-      setButtonLoading(false);
-
-      return;
-    }
-    if (data.user) {
-      toast.success("Link de recuperação enviado para seu email.", {
-        description:
-          "Caso não encontre na caixa de entrada, tente verificar a caixa de spam.",
-      });
-    }
+    // TODO: Implementar lógica de recuperação
+    toast.info("Funcionalidade em desenvolvimento.");
     setButtonLoading(false);
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

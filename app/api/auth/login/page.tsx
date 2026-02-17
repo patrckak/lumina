@@ -22,9 +22,6 @@ import { redirect } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ChevronLeft } from "lucide-react";
-import { email } from "../../../../lib/email-sender";
-import { prisma } from "@/constructor/PrismaConstructor";
-import { debt } from "../../../generated/prisma/browser";
 
 export default function SignIn() {
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -54,26 +51,17 @@ export default function SignIn() {
       return;
     }
     if (data.user) {
-      let userSync = await prisma.user.findFirst({
-        where: { authId: data.user.id },
-      });
-
-      if (!userSync) {
-        let authIdStg = data.user.id.toString();
-        let nameStg = data.user.name?.toString() || "Usuário Lúmina";
-        let newUser = await prisma.user.create({
-          data: {
-            authId: authIdStg,
-            name: nameStg,
-            debtId: (await prisma.debt.create({ data: { debtValue: 0 } }))
-              .debtId,
-          },
+      try {
+        await fetch("/api/auth/sync-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: data.user.id,
+            name: data.user.name,
+          }),
         });
-        if (newUser) {
-          toast.success("Bem-vindo, " + nameStg + "!", {
-            description: "Sua conta foi criada com sucesso.",
-          });
-        }
+      } catch (err) {
+        console.error("Failed to sync user:", err);
       }
 
       toast.success("Login realizado com sucesso!", {
