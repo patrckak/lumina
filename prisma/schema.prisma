@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model product {
+  id          Int      @id @default(autoincrement())
+  imgSrc      String   @default("https://placehold.co/300x350/dddddd/d3caff?text=L%C3%BAmina")
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  starred     Boolean  @default(false)
+}
+
+model user {
+  id            Int      @id @default(autoincrement())
+  name          String?
+  notifications String?
+  authId        String?
+  address       String?
+  hasDebt       Boolean  @default(false)
+  debtId        String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  debt   debt?
+  orders order[]
+}
+
+model debt {
+  debtId    String @id @default(cuid())
+  debtValue Float  @default(0)
+  userId    user   @relation(fields: [debtId], references: [debtId], onDelete: Cascade)
+}
+
+model order {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  itemsId    String // JSON string representing the items in the order
+  totalPrice Float
+  status     String   @default("pending") // pending, completed, cancelled, forgotten
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
