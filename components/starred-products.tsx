@@ -1,7 +1,6 @@
 "use server";
 
 import ProductCard from "./product-card";
-import { product } from "../app/generated/prisma/browser";
 import { prisma } from "@/constructor/PrismaConstructor";
 
 export default async function StarProducts() {
@@ -18,7 +17,7 @@ export default async function StarProducts() {
       </h1>
 
       <span className="mx-auto min-h-fit p-5 flex flex-row flex-10 max-w-screen tems-center justify-center  ">
-        {products.map((p: product) => (
+        {products.map((p: any) => (
           <ProductCard
             key={p.id}
             id={p.id}
